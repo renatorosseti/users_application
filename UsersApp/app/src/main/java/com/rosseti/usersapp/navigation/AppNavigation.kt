@@ -30,6 +30,10 @@ fun AppNavigation() {
             }
             HomeScreen(navController = navController, viewModel = viewModel)
         }
+        composable(AppScreens.UserDetailsScreen.name) {
+            val viewModel: UserDetailsViewModel = hiltViewModel()
+            UserDetailsScreen(navController = navController, viewModel = viewModel)
+        }
         composable(
             AppScreens.UserDetailsScreen.name + "/{userId}",
             arguments = listOf(navArgument("userId") { type = NavType.StringType })
@@ -41,7 +45,8 @@ fun AppNavigation() {
             }
             UserDetailsScreen(
                 navController = navController,
-                viewModel = hiltViewModel()
+                viewModel = hiltViewModel(),
+                userId = userId
             )
         }
     }

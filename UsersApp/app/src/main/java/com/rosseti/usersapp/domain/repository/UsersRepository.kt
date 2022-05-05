@@ -7,4 +7,5 @@ interface UsersRepository {
     suspend fun fetchUserById(userId: String): UserEntity
     suspend fun updateUser(userId: String, name: String, biography: String): UserEntity
     suspend fun deleteUser(userId: String): Unit
+    suspend fun createUser(name: String, biography: String): UserEntity
 }

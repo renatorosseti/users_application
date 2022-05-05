@@ -20,9 +20,12 @@ import com.rosseti.usersapp.domain.entity.UserEntity
 @Composable
 fun UserDetailsScreen(
     navController: NavController,
-    viewModel: UserDetailsViewModel
+    viewModel: UserDetailsViewModel,
+    userId: String = ""
 ) {
     val userAction = viewModel.userState.collectAsState().value
+
+    var profileId by remember { mutableStateOf(userId) }
 
     Scaffold(topBar = {
         TopAppBar(
@@ -45,15 +48,18 @@ fun UserDetailsScreen(
             Column {
                 when (userAction) {
                     is UserDetailsViewModel.HomeAction.Successful -> {
+                        profileId = userAction.data.id
                         UserDetails(userAction.data, viewModel = viewModel)
                     }
                     is UserDetailsViewModel.HomeAction.Error -> {
+
                     }
                     is UserDetailsViewModel.HomeAction.Loading -> {
                     }
                 }
-
-
+                if (profileId.isNullOrBlank()) {
+                    UserDetails(UserEntity(), viewModel = viewModel, isNewProfile = true)
+                }
             }
         }
     }
@@ -62,7 +68,8 @@ fun UserDetailsScreen(
 @Composable
 fun UserDetails(
     user: UserEntity,
-    viewModel: UserDetailsViewModel
+    viewModel: UserDetailsViewModel,
+    isNewProfile: Boolean = false
 ) {
     var userName by remember { mutableStateOf(user.name) }
 
@@ -88,7 +95,7 @@ fun UserDetails(
         },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 4.dp)
+            .padding(start = 8.dp, top = 20.dp)
     )
     TextField(
         value = userBiography,
@@ -98,21 +105,27 @@ fun UserDetails(
         },
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
-            .padding(start = 4.dp)
+            .padding(start = 8.dp, top = 20.dp)
     )
     Button(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(top = 20.dp)
             .height(40.dp),
         enabled = userName.isNotEmpty() && userBiography.isNotEmpty(),
         onClick = {
-            viewModel.updateUser(
-                userId = user.id,
-                name = userName,
-                biography = userBiography
-            )
-
+            if (isNewProfile) {
+                viewModel.createUser(
+                    name = userName,
+                    biography = userBiography
+                )
+            } else {
+                viewModel.updateUser(
+                    userId = user.id,
+                    name = userName,
+                    biography = userBiography
+                )
+            }
         }) {
         Text("Save profile")
     }

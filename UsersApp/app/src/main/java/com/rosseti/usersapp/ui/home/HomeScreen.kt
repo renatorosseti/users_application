@@ -67,24 +67,35 @@ fun HomeScreen(
                 .padding(5.dp)
                 .fillMaxWidth()
         ) {
-            LazyColumn {
-                when (homeAction) {
-                    is HomeViewModel.HomeAction.Successful -> {
-                        val list = homeAction.data
-                        items(list) {
-                            EventRow(
-                                user = it,
-                                navController = navController,
-                                viewModel = viewModel,
-                                usersIdSelected = usersIdSelected,
-                                showDelete = showDelete
-                            )
+            Column {
+                LazyColumn {
+                    when (homeAction) {
+                        is HomeViewModel.HomeAction.Successful -> {
+                            val list = homeAction.data
+                            items(list) {
+                                EventRow(
+                                    user = it,
+                                    navController = navController,
+                                    usersIdSelected = usersIdSelected,
+                                    showDelete = showDelete
+                                )
+                            }
+                        }
+                        is HomeViewModel.HomeAction.Error -> {
+                        }
+                        is HomeViewModel.HomeAction.Loading -> {
                         }
                     }
-                    is HomeViewModel.HomeAction.Error -> {
-                    }
-                    is HomeViewModel.HomeAction.Loading -> {
-                    }
+                }
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp)
+                        .height(40.dp),
+                    onClick = {
+                        navController.navigate(route = AppScreens.UserDetailsScreen.name)
+                    }) {
+                    Text("Create new user")
                 }
             }
         }
@@ -97,7 +108,6 @@ fun HomeScreen(
 fun EventRow(
     user: UserEntity,
     navController: NavController,
-    viewModel: HomeViewModel,
     usersIdSelected: MutableList<String>,
     showDelete: MutableState<Boolean>
 ) {
@@ -116,10 +126,15 @@ fun EventRow(
                 .fillMaxWidth()
                 .combinedClickable(
                     onClick = {
-                        if (usersIdSelected.contains(user.id)) {
-                            usersIdSelected.remove(user.id)
+                        if (usersIdSelected.isNotEmpty()) {
+                            if (usersIdSelected.contains(user.id)) {
+                                usersIdSelected.remove(user.id)
+                            } else {
+                                usersIdSelected.add(user.id)
+                            }
+                        } else {
+                            navController.navigate(route = AppScreens.UserDetailsScreen.name + "/${user.id}")
                         }
-                        navController.navigate(route = AppScreens.UserDetailsScreen.name + "/${user.id}")
                     },
                     onLongClick = {
                         if (usersIdSelected.contains(user.id)) {
@@ -140,7 +155,10 @@ fun EventRow(
                     placeholder = painterResource(R.drawable.ic_launcher_foreground),
                     contentDescription = stringResource(R.string.app_name),
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(90.dp).clip(CircleShape).align(Alignment.CenterVertically)
+                    modifier = Modifier
+                        .size(90.dp)
+                        .clip(CircleShape)
+                        .align(Alignment.CenterVertically)
                 )
                 Column(
                     modifier = Modifier

@@ -3,6 +3,7 @@ package com.rosseti.usersapp.data.api
 import com.rosseti.usersapp.data.model.UserModel
 import com.rosseti.usersapp.data.model.UsersResponse
 import retrofit2.http.*
+import java.security.cert.CRLException
 
 interface UsersApi {
     @GET(value = "users")
@@ -15,6 +16,13 @@ interface UsersApi {
     @PUT(value = "users/{userId}")
     suspend fun updateUser(
         @Path("userId") userId: String,
+        @Field("name") name: String,
+        @Field("biography") biography: String
+    ): UserModel
+
+    @FormUrlEncoded
+    @POST(value = "users")
+    suspend fun createUser(
         @Field("name") name: String,
         @Field("biography") biography: String
     ): UserModel
