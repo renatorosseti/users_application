@@ -6,6 +6,9 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -51,10 +54,9 @@ fun UserDetailsScreen(
                         profileId = userAction.data.id
                         UserDetails(userAction.data, viewModel = viewModel)
                     }
-                    is UserDetailsViewModel.HomeAction.Error -> {
-
-                    }
+                    is UserDetailsViewModel.HomeAction.Error -> {}
                     is UserDetailsViewModel.HomeAction.Loading -> {
+                        CircularProgressIndicator(Modifier.align(CenterHorizontally).padding(top = 180.dp))
                     }
                 }
                 if (profileId.isNullOrBlank()) {

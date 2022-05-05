@@ -56,7 +56,10 @@ fun HomeScreen(
                         viewModel.deleteUsers(usersIdSelected.toList())
 
                     }) {
-                        Icon(imageVector = Icons.Filled.Delete, contentDescription = stringResource(id = R.string.delete_icon))
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = stringResource(id = R.string.delete_icon)
+                        )
                     }
                 }
             }
@@ -68,10 +71,10 @@ fun HomeScreen(
                 .fillMaxWidth()
         ) {
             Column {
-                LazyColumn {
-                    when (homeAction) {
-                        is HomeViewModel.HomeAction.Successful -> {
-                            val list = homeAction.data
+                when (homeAction) {
+                    is HomeViewModel.HomeAction.Successful -> {
+                        val list = homeAction.data
+                        LazyColumn {
                             items(list) {
                                 EventRow(
                                     user = it,
@@ -81,11 +84,16 @@ fun HomeScreen(
                                 )
                             }
                         }
-                        is HomeViewModel.HomeAction.Error -> {
-                        }
-                        is HomeViewModel.HomeAction.Loading -> {
-                        }
                     }
+                    is HomeViewModel.HomeAction.Error -> {}
+                    is HomeViewModel.HomeAction.Loading -> {
+                        CircularProgressIndicator(
+                            Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(top = 180.dp)
+                        )
+                    }
+
                 }
                 Button(
                     modifier = Modifier
