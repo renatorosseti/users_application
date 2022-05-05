@@ -2,16 +2,17 @@ package com.rosseti.usersapp.ui.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -27,6 +28,8 @@ import coil.request.ImageRequest
 import com.rosseti.usersapp.R
 import com.rosseti.usersapp.domain.entity.UserEntity
 import com.rosseti.usersapp.navigation.AppScreens
+import com.rosseti.usersapp.ui.theme.Dark
+import com.rosseti.usersapp.ui.theme.Grey
 
 @Composable
 fun HomeScreen(
@@ -101,17 +104,21 @@ fun EventRow(
         Modifier
             .padding(3.dp)
             .fillMaxWidth(),
-        color = if (usersIdSelected.contains(user.id)) Color(0xFFB2DFAB) else Color(0xFFB2fFFF)
     ) {
-        Row(
+        Card(
+            elevation = 2.dp,
+            shape = RoundedCornerShape(corner = CornerSize(16.dp)),
+            backgroundColor = if (usersIdSelected.contains(user.id)) Grey else Dark,
             modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .height(100.dp)
                 .fillMaxWidth()
                 .combinedClickable(
                     onClick = {
                         if (usersIdSelected.contains(user.id)) {
                             usersIdSelected.remove(user.id)
                         }
-                        navController.navigate(route = AppScreens.UserDetailsScreen.name+"/${user.id}")
+                        navController.navigate(route = AppScreens.UserDetailsScreen.name + "/${user.id}")
                         println("Single Click")
                     },
                     onLongClick = {
@@ -125,17 +132,29 @@ fun EventRow(
                     },
                 ),
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(user.image)
-                    .crossfade(true)
-                    .build(),
-                placeholder = painterResource(R.drawable.ic_launcher_foreground),
-                contentDescription = stringResource(R.string.app_name),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.clip(CircleShape)
-            )
-            Text(text = user.name, modifier = Modifier.padding(start = 4.dp))
+            Row {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(user.image)
+                        .crossfade(true)
+                        .build(),
+                    placeholder = painterResource(R.drawable.ic_launcher_foreground),
+                    contentDescription = stringResource(R.string.app_name),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(90.dp).clip(CircleShape).align(Alignment.CenterVertically)
+                )
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                        .align(Alignment.CenterVertically)
+                ) {
+                    Text(
+                        text = user.name,
+                        color = Color.White
+                    )
+                }
+            }
         }
     }
 }

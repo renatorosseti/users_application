@@ -24,11 +24,7 @@ class HomeViewModel @Inject constructor(private val getUsersUseCase: GetUsersUse
     private val homeAction = MutableStateFlow<HomeAction>(HomeAction.Loading)
     val homeState = homeAction.asStateFlow()
 
-    init {
-        fetchUsers()
-    }
-
-    private fun fetchUsers() {
+    fun fetchUsers() {
         viewModelScope.launch {
             getUsersUseCase().collect { resource ->
                 when (resource.status) {

@@ -16,13 +16,11 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.rosseti.usersapp.R
 import com.rosseti.usersapp.domain.entity.UserEntity
-import kotlinx.coroutines.launch
 
 @Composable
 fun UserDetailsScreen(
     navController: NavController,
-    viewModel: UserDetailsViewModel,
-    userId: String
+    viewModel: UserDetailsViewModel
 ) {
     val userAction = viewModel.userState.collectAsState().value
 
