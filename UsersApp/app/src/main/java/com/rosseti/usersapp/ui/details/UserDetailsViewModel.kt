@@ -1,9 +1,10 @@
-package com.rosseti.usersapp.ui.home
+package com.rosseti.usersapp.ui.details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rosseti.usersapp.domain.Resource
 import com.rosseti.usersapp.domain.entity.UserEntity
+import com.rosseti.usersapp.domain.usecase.GetUserByIdUseCase
 import com.rosseti.usersapp.domain.usecase.GetUsersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,36 +13,32 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val getUsersUseCase: GetUsersUseCase) :
+class UserDetailsViewModel @Inject constructor(private val getUserByIdUseCase: GetUserByIdUseCase) :
     ViewModel() {
 
     sealed class HomeAction {
         object Loading : HomeAction()
         object Error : HomeAction()
-        data class Successful(val data: List<UserEntity>) : HomeAction()
+        data class Successful(val data: UserEntity) : HomeAction()
     }
 
-    private val homeAction = MutableStateFlow<HomeAction>(HomeAction.Loading)
-    val homeState = homeAction.asStateFlow()
+    private val userAction = MutableStateFlow<HomeAction>(HomeAction.Loading)
+    val userState = userAction.asStateFlow()
 
-    init {
-        fetchUsers()
-    }
-
-    private fun fetchUsers() {
+    fun fetchUsersById(userId: String) {
         viewModelScope.launch {
-            getUsersUseCase().collect { resource ->
+            getUserByIdUseCase(userId).collect { resource ->
                 when (resource.status) {
                     Resource.Status.LOADING -> {
-                        homeAction.value = HomeAction.Loading
+                        userAction.value = HomeAction.Loading
                     }
                     Resource.Status.SUCCESS -> {
                         if (resource.data != null) {
-                            homeAction.value = HomeAction.Successful(resource.data)
+                            userAction.value = HomeAction.Successful(resource.data)
                         }
                     }
                     Resource.Status.ERROR -> {
-                        homeAction.value = HomeAction.Error
+                        userAction.value = HomeAction.Error
                     }
                 }
             }

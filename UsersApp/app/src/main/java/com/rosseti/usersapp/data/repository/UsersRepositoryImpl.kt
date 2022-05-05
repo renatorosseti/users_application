@@ -16,4 +16,9 @@ class UsersRepositoryImpl @Inject constructor(private val api: UsersApi) : Users
                 biography = it.biography
             )
         }
+
+    override suspend fun fetchUserById(userId: String): UserEntity {
+        val userModel = api.fetchUserById(userId = userId)
+        return UserEntity(id = userModel.id, image = userModel.image, name = userModel.name, biography = userModel.biography)
+    }
 }

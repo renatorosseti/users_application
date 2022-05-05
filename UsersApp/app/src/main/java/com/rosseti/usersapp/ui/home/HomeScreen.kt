@@ -50,7 +50,6 @@ fun HomeScreen(
             actions = {
                 if (usersIdSelected.isNotEmpty()) {
                     IconButton(onClick = {
-                        navController.navigate(route = AppScreens.UserCreationBottomSheet.name)
                         println("Delete click: ${usersIdSelected.toList()}")
                     }) {
                         Icon(imageVector = Icons.Filled.Delete, contentDescription = "delete icon")
@@ -112,6 +111,7 @@ fun EventRow(
                         if (usersIdSelected.contains(user.id)) {
                             usersIdSelected.remove(user.id)
                         }
+                        navController.navigate(route = AppScreens.UserDetailsScreen.name+"/${user.id}")
                         println("Single Click")
                     },
                     onLongClick = {
