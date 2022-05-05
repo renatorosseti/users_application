@@ -29,7 +29,7 @@ fun UserDetailsScreen(
 
     Scaffold(topBar = {
         TopAppBar(
-            title = { Text(text = "User profile") },
+            title = { Text(text = stringResource(id = R.string.user_profile)) },
             navigationIcon = {
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null,
                     tint = MaterialTheme.colors.onSecondary,
@@ -81,7 +81,7 @@ fun UserDetails(
             .crossfade(true)
             .build(),
         placeholder = painterResource(R.drawable.ic_launcher_foreground),
-        contentDescription = stringResource(R.string.app_name),
+        contentDescription = stringResource(id = R.string.app_name),
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.4F)
@@ -127,6 +127,6 @@ fun UserDetails(
                 )
             }
         }) {
-        Text("Save profile")
+        Text(stringResource(id = R.string.save_profile))
     }
 }

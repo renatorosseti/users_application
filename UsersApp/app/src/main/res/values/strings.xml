@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">UsersApp</string>
+    <string name="app_name">Users application</string>
+    <string name="create_new_user">Create new user</string>
+    <string name="delete_icon">Delete icon</string>
+    <string name="save_profile">Save profile</string>
+    <string name="user_profile">User profile</string>
 </resources>

@@ -48,7 +48,7 @@ fun HomeScreen(
     Scaffold(topBar = {
         TopAppBar(
             title = {
-                Text(text = "Users application")
+                Text(text = stringResource(id = R.string.app_name))
             },
             actions = {
                 if (usersIdSelected.isNotEmpty()) {
@@ -56,7 +56,7 @@ fun HomeScreen(
                         viewModel.deleteUsers(usersIdSelected.toList())
 
                     }) {
-                        Icon(imageVector = Icons.Filled.Delete, contentDescription = "delete icon")
+                        Icon(imageVector = Icons.Filled.Delete, contentDescription = stringResource(id = R.string.delete_icon))
                     }
                 }
             }
@@ -95,7 +95,7 @@ fun HomeScreen(
                     onClick = {
                         navController.navigate(route = AppScreens.UserDetailsScreen.name)
                     }) {
-                    Text("Create new user")
+                    Text(stringResource(id = R.string.create_new_user))
                 }
             }
         }
@@ -153,7 +153,7 @@ fun EventRow(
                         .crossfade(true)
                         .build(),
                     placeholder = painterResource(R.drawable.ic_launcher_foreground),
-                    contentDescription = stringResource(R.string.app_name),
+                    contentDescription = stringResource(id = R.string.app_name),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(90.dp)
