@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.rosseti.usersapp.domain.Resource
 import com.rosseti.usersapp.domain.entity.UserEntity
 import com.rosseti.usersapp.domain.usecase.GetUserByIdUseCase
-import com.rosseti.usersapp.domain.usecase.GetUsersUseCase
+import com.rosseti.usersapp.domain.usecase.UpdateUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,7 +13,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class UserDetailsViewModel @Inject constructor(private val getUserByIdUseCase: GetUserByIdUseCase) :
+class UserDetailsViewModel @Inject constructor(
+    private val getUserByIdUseCase: GetUserByIdUseCase,
+    private val updateUserUseCase: UpdateUserUseCase
+) :
     ViewModel() {
 
     sealed class HomeAction {
@@ -28,6 +31,26 @@ class UserDetailsViewModel @Inject constructor(private val getUserByIdUseCase: G
     fun fetchUsersById(userId: String) {
         viewModelScope.launch {
             getUserByIdUseCase(userId).collect { resource ->
+                when (resource.status) {
+                    Resource.Status.LOADING -> {
+                        userAction.value = HomeAction.Loading
+                    }
+                    Resource.Status.SUCCESS -> {
+                        if (resource.data != null) {
+                            userAction.value = HomeAction.Successful(resource.data)
+                        }
+                    }
+                    Resource.Status.ERROR -> {
+                        userAction.value = HomeAction.Error
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateUser(userId: String, name: String, biography: String) {
+        viewModelScope.launch {
+            updateUserUseCase(userId, name, biography).collect { resource ->
                 when (resource.status) {
                     Resource.Status.LOADING -> {
                         userAction.value = HomeAction.Loading

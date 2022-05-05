@@ -1,18 +1,12 @@
 package com.rosseti.usersapp.ui.details
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -22,14 +16,14 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.rosseti.usersapp.R
 import com.rosseti.usersapp.domain.entity.UserEntity
+import kotlinx.coroutines.launch
 
 @Composable
 fun UserDetailsScreen(
     navController: NavController,
-    viewModel: UserDetailsViewModel
+    viewModel: UserDetailsViewModel,
+    userId: String
 ) {
-    var biography by remember { mutableStateOf("") }
-
     val userAction = viewModel.userState.collectAsState().value
 
     Scaffold(topBar = {
@@ -53,7 +47,7 @@ fun UserDetailsScreen(
             Column {
                 when (userAction) {
                     is UserDetailsViewModel.HomeAction.Successful -> {
-                        UserDetails(user = userAction.data)
+                        UserDetails(userAction.data, viewModel = viewModel)
                     }
                     is UserDetailsViewModel.HomeAction.Error -> {
                     }
@@ -68,7 +62,14 @@ fun UserDetailsScreen(
 }
 
 @Composable
-fun UserDetails(user: UserEntity) {
+fun UserDetails(
+    user: UserEntity,
+    viewModel: UserDetailsViewModel
+) {
+    var userName by remember { mutableStateOf(user.name) }
+
+    var userBiography by remember { mutableStateOf(user.biography) }
+
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(user.image)
@@ -76,19 +77,45 @@ fun UserDetails(user: UserEntity) {
             .build(),
         placeholder = painterResource(R.drawable.ic_launcher_foreground),
         contentDescription = stringResource(R.string.app_name),
-        contentScale = ContentScale.Crop,
-        modifier = Modifier.clip(CircleShape)
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.4F)
     )
     TextField(
-        value = user.name,
+        value = userName,
         label = { Text("Name") },
-        onValueChange = { user.name = it },
-        modifier = Modifier.padding(start = 4.dp)
+        onValueChange = {
+            userName = it
+
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 4.dp)
     )
     TextField(
-        value = user.biography,
+        value = userBiography,
         label = { Text("Biography") },
-        onValueChange = { user.biography = it },
-        modifier = Modifier.padding(start = 4.dp)
+        onValueChange = {
+            userBiography = it
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .padding(start = 4.dp)
     )
+    Button(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(40.dp),
+        enabled = userName.isNotEmpty() && userBiography.isNotEmpty(),
+        onClick = {
+            viewModel.updateUser(
+                userId = user.id,
+                name = userName,
+                biography = userBiography
+            )
+
+        }) {
+        Text("Save profile")
+    }
 }

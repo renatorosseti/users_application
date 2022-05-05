@@ -37,7 +37,8 @@ fun AppNavigation() {
             }
             UserDetailsScreen(
                 navController = navController,
-                viewModel = hiltViewModel()
+                viewModel = hiltViewModel(),
+                userId = userId
             )
         }
     }
