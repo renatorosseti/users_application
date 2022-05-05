@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rosseti.usersapp.domain.Resource
 import com.rosseti.usersapp.domain.entity.UserEntity
+import com.rosseti.usersapp.domain.usecase.DeleteUserUseCase
 import com.rosseti.usersapp.domain.usecase.GetUsersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +13,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val getUsersUseCase: GetUsersUseCase) :
+class HomeViewModel @Inject constructor(
+    private val getUsersUseCase: GetUsersUseCase,
+    private val deleteUserUseCase: DeleteUserUseCase
+) :
     ViewModel() {
 
     sealed class HomeAction {
@@ -42,5 +46,14 @@ class HomeViewModel @Inject constructor(private val getUsersUseCase: GetUsersUse
                 }
             }
         }
+    }
+
+    fun deleteUsers(userIds: List<String>) {
+        userIds.forEach {
+            viewModelScope.launch {
+                deleteUserUseCase(it)
+            }
+        }
+        fetchUsers()
     }
 }
