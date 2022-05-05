@@ -2,7 +2,7 @@ package com.rosseti.usersapp.domain
 
 import com.rosseti.usersapp.domain.entity.UserEntity
 import com.rosseti.usersapp.domain.repository.UsersRepository
-import com.rosseti.usersapp.domain.usecase.GetUsersUseCase
+import com.rosseti.usersapp.domain.usecase.GetUserByIdUseCase
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
@@ -14,8 +14,8 @@ import org.junit.Test
 import java.io.IOException
 
 @ExperimentalCoroutinesApi
-class GetUsersUseCaseTest {
-    private lateinit var getUsersUseCase: GetUsersUseCase
+class GetUserByIdUseCaseTest {
+    private lateinit var getUserByIdUseCase: GetUserByIdUseCase
 
     @MockK(relaxed = true)
     private lateinit var repository: UsersRepository
@@ -23,23 +23,23 @@ class GetUsersUseCaseTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-        getUsersUseCase =
-            GetUsersUseCase(
-                repository,
+        getUserByIdUseCase =
+            GetUserByIdUseCase(
+                repository
             )
     }
 
     @Test
-    fun `when request fetchUsers with valid credentials returns UserEntity list, emit success with content as data`() {
-        val response = listOf(
-            UserEntity(
+    fun `when request fetchUserById with valid credentials returns UserEntity, emit success with content as data`() {
+        val userId = "Test"
+        val response = UserEntity(
                 name = "Test 001",
                 biography = "Test"
             )
-        )
-        coEvery { repository.fetchUsers() } returns response
+
+        coEvery { repository.fetchUserById(userId = userId) } returns response
         runBlocking {
-            getUsersUseCase().collectIndexed { index, value ->
+            getUserByIdUseCase(userId).collectIndexed { index, value ->
                 when (index) {
                     FIRST_ELEMENT_EMITTED -> {
                         assert(value.status == Resource.Status.LOADING)
@@ -54,11 +54,12 @@ class GetUsersUseCaseTest {
     }
 
     @Test
-    fun `when request fetchUsers returns error, emit IOException error`() {
-        coEvery { repository.fetchUsers() } throws IOException("IO error")
+    fun `when request fetchUserById returns error, emit IOException error`() {
+        val userId = "Test"
+        coEvery { repository.fetchUserById(userId = userId) } throws IOException("IO error")
 
         runBlocking {
-            getUsersUseCase().collectIndexed { index, value ->
+            getUserByIdUseCase(userId).collectIndexed { index, value ->
                 when (index) {
                     FIRST_ELEMENT_EMITTED -> {
                         assert(value.status == Resource.Status.LOADING)
