@@ -21,71 +21,29 @@ class UserDetailsViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    sealed class HomeAction {
-        object Loading : HomeAction()
-        object Error : HomeAction()
-        data class Successful(val data: UserEntity) : HomeAction()
-    }
-
-    private val userAction = MutableStateFlow<HomeAction>(HomeAction.Loading)
+    private val userAction = MutableStateFlow<Resource<UserEntity>>(Resource.error())
     val userState = userAction.asStateFlow()
 
     fun fetchUsersById(userId: String) {
         viewModelScope.launch {
-            getUserByIdUseCase(userId).collect { resource ->
-                when (resource.status) {
-                    Resource.Status.LOADING -> {
-                        userAction.value = HomeAction.Loading
-                    }
-                    Resource.Status.SUCCESS -> {
-                        if (resource.data != null) {
-                            userAction.value = HomeAction.Successful(resource.data)
-                        }
-                    }
-                    Resource.Status.ERROR -> {
-                        userAction.value = HomeAction.Error
-                    }
-                }
+            getUserByIdUseCase(userId).collect {
+                userAction.value = it
             }
         }
     }
 
     fun updateUser(userId: String, name: String, biography: String) {
         viewModelScope.launch {
-            updateUserUseCase(userId, name, biography).collect { resource ->
-                when (resource.status) {
-                    Resource.Status.LOADING -> {
-                        userAction.value = HomeAction.Loading
-                    }
-                    Resource.Status.SUCCESS -> {
-                        if (resource.data != null) {
-                            userAction.value = HomeAction.Successful(resource.data)
-                        }
-                    }
-                    Resource.Status.ERROR -> {
-                        userAction.value = HomeAction.Error
-                    }
-                }
+            updateUserUseCase(userId, name, biography).collect {
+                userAction.value = it
             }
         }
     }
 
     fun createUser(name: String, biography: String) {
         viewModelScope.launch {
-            createUserUseCase(name, biography).collect { resource ->
-                when (resource.status) {
-                    Resource.Status.LOADING -> {
-                        userAction.value = HomeAction.Loading
-                    }
-                    Resource.Status.SUCCESS -> {
-                        if (resource.data != null) {
-                            userAction.value = HomeAction.Successful(resource.data)
-                        }
-                    }
-                    Resource.Status.ERROR -> {
-                        userAction.value = HomeAction.Error
-                    }
-                }
+            createUserUseCase(name, biography).collect {
+                userAction.value = it
             }
         }
     }

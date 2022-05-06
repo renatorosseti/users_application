@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.rosseti.usersapp.R
+import com.rosseti.usersapp.domain.Resource
 import com.rosseti.usersapp.domain.entity.UserEntity
 import com.rosseti.usersapp.navigation.AppScreens
 import com.rosseti.usersapp.ui.theme.Dark
@@ -71,22 +72,24 @@ fun HomeScreen(
                 .fillMaxWidth()
         ) {
             Column {
-                when (homeAction) {
-                    is HomeViewModel.HomeAction.Successful -> {
+                when (homeAction.status) {
+                    Resource.Status.SUCCESS -> {
                         val list = homeAction.data
-                        LazyColumn {
-                            items(list) {
-                                EventRow(
-                                    user = it,
-                                    navController = navController,
-                                    usersIdSelected = usersIdSelected,
-                                    showDelete = showDelete
-                                )
+                        if (list != null) {
+                            LazyColumn {
+                                items(list) {
+                                    EventRow(
+                                        user = it,
+                                        navController = navController,
+                                        usersIdSelected = usersIdSelected,
+                                        showDelete = showDelete
+                                    )
+                                }
                             }
                         }
                     }
-                    is HomeViewModel.HomeAction.Error -> {}
-                    is HomeViewModel.HomeAction.Loading -> {
+                    Resource.Status.ERROR -> {}
+                    Resource.Status.LOADING -> {
                         CircularProgressIndicator(
                             Modifier
                                 .align(Alignment.CenterHorizontally)

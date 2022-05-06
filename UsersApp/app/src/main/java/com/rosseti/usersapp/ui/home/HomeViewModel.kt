@@ -19,31 +19,13 @@ class HomeViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    sealed class HomeAction {
-        object Loading : HomeAction()
-        object Error : HomeAction()
-        data class Successful(val data: List<UserEntity>) : HomeAction()
-    }
-
-    private val homeAction = MutableStateFlow<HomeAction>(HomeAction.Loading)
+    private val homeAction = MutableStateFlow<Resource<List<UserEntity>>>(Resource.error())
     val homeState = homeAction.asStateFlow()
 
     fun fetchUsers() {
         viewModelScope.launch {
             getUsersUseCase().collect { resource ->
-                when (resource.status) {
-                    Resource.Status.LOADING -> {
-                        homeAction.value = HomeAction.Loading
-                    }
-                    Resource.Status.SUCCESS -> {
-                        if (resource.data != null) {
-                            homeAction.value = HomeAction.Successful(resource.data)
-                        }
-                    }
-                    Resource.Status.ERROR -> {
-                        homeAction.value = HomeAction.Error
-                    }
-                }
+                homeAction.value = resource
             }
         }
     }

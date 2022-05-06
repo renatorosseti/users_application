@@ -17,6 +17,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.rosseti.usersapp.R
+import com.rosseti.usersapp.domain.Resource
 import com.rosseti.usersapp.domain.entity.UserEntity
 
 @Composable
@@ -48,14 +49,21 @@ fun UserDetailsScreen(
                 .fillMaxHeight()
         ) {
             Column {
-                when (userAction) {
-                    is UserDetailsViewModel.HomeAction.Successful -> {
-                        profileId = userAction.data.id
-                        UserDetails(userAction.data, viewModel = viewModel)
+                when (userAction.status) {
+                    Resource.Status.SUCCESS -> {
+                        val user = userAction.data
+                        if (user != null) {
+                            profileId = user.id
+                            UserDetails(user, viewModel = viewModel)
+                        }
                     }
-                    is UserDetailsViewModel.HomeAction.Error -> {}
-                    is UserDetailsViewModel.HomeAction.Loading -> {
-                        CircularProgressIndicator(Modifier.align(CenterHorizontally).padding(top = 180.dp))
+                    Resource.Status.ERROR -> {}
+                    Resource.Status.LOADING -> {
+                        CircularProgressIndicator(
+                            Modifier
+                                .align(CenterHorizontally)
+                                .padding(top = 180.dp)
+                        )
                     }
                 }
                 if (profileId.isNullOrBlank()) {
